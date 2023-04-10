@@ -1,13 +1,13 @@
 <template>
-  <div>
+  <main class="m-x-auto max-w-sm border border-gray-200 rounded-lg p-6">
     <NuxtLayout>
       <NuxtPage v-if="authenticated" />
       <TheLogin v-else />
     </NuxtLayout>
-  </div>
+  </main>
 </template>
 
 <script setup lang="ts">
-const { authenticated } = useSession()
+const { authenticated } = useSession();
 await useCurrentUser().loadUser();
 </script>

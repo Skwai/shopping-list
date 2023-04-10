@@ -27,7 +27,7 @@ model List {
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
   deletedAt DateTime?
-  ListItem  ListItem[]
+  items     ListItem[]
   users     User[]
 }
 
@@ -40,4 +40,6 @@ model ListItem {
   deletedAt   DateTime?
   list        List      @relation(fields: [listId], references: [id])
   listId      Int
+
+  @@index([listId, id])
 }

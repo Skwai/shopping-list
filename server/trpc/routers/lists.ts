@@ -12,7 +12,7 @@ export const listsRouter = router({
       },
     });
 
-    return userWithLists?.lists;
+    return userWithLists?.lists ?? [];
   }),
 
   findOne: protectedProcedure
@@ -21,9 +21,17 @@ export const listsRouter = router({
       const lists = await ctx.prisma.list.findFirstOrThrow({
         where: {
           id: input.id,
+          deletedAt: null,
           users: {
             some: {
               id: ctx.session.uid,
+            },
+          },
+        },
+        include: {
+          items: {
+            where: {
+              completedAt: null,
             },
           },
         },
@@ -37,7 +45,7 @@ export const listsRouter = router({
     .mutation(async ({ ctx, input }) => {
       const { name } = input;
 
-      return ctx.prisma.list.create({
+      const list = await ctx.prisma.list.create({
         data: {
           name,
           users: {
@@ -47,5 +55,63 @@ export const listsRouter = router({
           },
         },
       });
+
+      return list;
+    }),
+
+  completeListItem: protectedProcedure
+    .input(
+      z.object({
+        itemId: z.coerce.number(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const item = await ctx.prisma.listItem.update({
+        where: {
+          id: input.itemId,
+        },
+        data: {
+          completedAt: new Date(),
+        },
+      });
+
+      return item;
+    }),
+
+  addItemToList: protectedProcedure
+    .input(
+      z.object({
+        listId: z.coerce.number(),
+        label: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { label, listId } = input;
+
+      // Ensure the user has access to the list
+      await ctx.prisma.list.findFirstOrThrow({
+        where: {
+          id: listId,
+          deletedAt: null,
+          users: {
+            some: {
+              id: ctx.session.uid,
+            },
+          },
+        },
+      });
+
+      const item = await ctx.prisma.listItem.create({
+        data: {
+          label,
+          list: {
+            connect: {
+              id: listId,
+            },
+          },
+        },
+      });
+
+      return item;
     }),
 });
