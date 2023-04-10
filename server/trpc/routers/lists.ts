@@ -15,12 +15,29 @@ export const listsRouter = router({
     return userWithLists?.lists;
   }),
 
-  createList: protectedProcedure
+  findOne: protectedProcedure
+    .input(z.object({ id: z.coerce.number() }))
+    .query(async ({ ctx, input }) => {
+      const lists = await ctx.prisma.list.findFirstOrThrow({
+        where: {
+          id: input.id,
+          users: {
+            some: {
+              id: ctx.session.uid,
+            },
+          },
+        },
+      });
+
+      return lists;
+    }),
+
+  create: protectedProcedure
     .input(z.object({ name: z.string() }))
     .mutation(async ({ ctx, input }) => {
       const { name } = input;
 
-      await ctx.prisma.list.create({
+      return ctx.prisma.list.create({
         data: {
           name,
           users: {
