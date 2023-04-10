@@ -9,5 +9,8 @@
 
 <script setup lang="ts">
 const { authenticated } = useSession();
-await useCurrentUser().loadUser();
+
+await useAsyncData(async () => {
+  await useCurrentUser().loadUser();
+});
 </script>

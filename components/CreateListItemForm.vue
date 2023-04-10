@@ -1,8 +1,12 @@
 <template>
   <form @submit.prevent="submit">
-    <p>
-      <input v-model="label" type="text" placeholder="Add item" required />
-    </p>
+    <input
+      v-model="label"
+      class="p-3 border border-gray-200 block w-full focus:border-gray-300 outline-none"
+      type="text"
+      placeholder="Add item"
+      required
+    />
   </form>
 </template>
 

@@ -1,13 +1,13 @@
 <template>
   <div>
     <div v-if="list">
-      <h1 class="text-3xl font-bold mb-4">{{ list.name }}</h1>
+      <h1 class="text-xl font-bold mb-4">{{ list.name }}</h1>
 
-      <div class="mb-4 flex flex-col gap-2 justify-start items-stretch">
+      <div class="py-2 mb-4 flex flex-col gap-2 justify-start items-stretch">
         <div
           v-for="item in list.items"
           :key="item.id"
-          class="flex items-center gap-3"
+          class="flex items-center gap-3 text-lg"
         >
           <button
             type="button"
@@ -33,7 +33,7 @@ const listId = computed<number>(() => {
   return parseInt(route.params.list as string);
 });
 
-const { data: list } = await useTrpc().lists.findOne.useQuery({
+const { data: list } = await useTrpc().lists.getList.useQuery({
   id: listId.value,
 });
 

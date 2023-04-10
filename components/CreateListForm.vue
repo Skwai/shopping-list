@@ -1,10 +1,13 @@
 <template>
   <form @submit.prevent="submit">
     <p>
-      <input v-model="name" placeholder="Add new list" type="text" required />
-    </p>
-    <p>
-      <AppButton type="submit">Create list</AppButton>
+      <input
+        v-model="name"
+        class="p-3 border border-gray-200 block w-full focus:border-gray-300 outline-none"
+        placeholder="New list name"
+        type="text"
+        required
+      />
     </p>
   </form>
 </template>

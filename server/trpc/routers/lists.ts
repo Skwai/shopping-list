@@ -2,20 +2,22 @@ import { z } from "zod";
 import { protectedProcedure, router } from "../trpc";
 
 export const listsRouter = router({
-  findAll: protectedProcedure.query(async ({ ctx }) => {
-    const userWithLists = await ctx.prisma.user.findUnique({
+  getAllLists: protectedProcedure.query(async ({ ctx }) => {
+    const lists = await ctx.prisma.list.findMany({
       where: {
-        id: ctx.session.uid,
-      },
-      include: {
-        lists: true,
+        deletedAt: null,
+        users: {
+          some: {
+            id: ctx.session.uid,
+          },
+        },
       },
     });
 
-    return userWithLists?.lists ?? [];
+    return lists;
   }),
 
-  findOne: protectedProcedure
+  getList: protectedProcedure
     .input(z.object({ id: z.coerce.number() }))
     .query(async ({ ctx, input }) => {
       const lists = await ctx.prisma.list.findFirstOrThrow({
@@ -31,6 +33,7 @@ export const listsRouter = router({
         include: {
           items: {
             where: {
+              deletedAt: null,
               completedAt: null,
             },
           },
@@ -40,7 +43,7 @@ export const listsRouter = router({
       return lists;
     }),
 
-  create: protectedProcedure
+  createList: protectedProcedure
     .input(z.object({ name: z.string() }))
     .mutation(async ({ ctx, input }) => {
       const { name } = input;
@@ -57,25 +60,6 @@ export const listsRouter = router({
       });
 
       return list;
-    }),
-
-  completeListItem: protectedProcedure
-    .input(
-      z.object({
-        itemId: z.coerce.number(),
-      })
-    )
-    .mutation(async ({ ctx, input }) => {
-      const item = await ctx.prisma.listItem.update({
-        where: {
-          id: input.itemId,
-        },
-        data: {
-          completedAt: new Date(),
-        },
-      });
-
-      return item;
     }),
 
   addItemToList: protectedProcedure
@@ -109,6 +93,58 @@ export const listsRouter = router({
               id: listId,
             },
           },
+        },
+      });
+
+      return item;
+    }),
+
+  completeListItem: protectedProcedure
+    .input(
+      z.object({
+        itemId: z.coerce.number(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const item = await ctx.prisma.listItem.updateMany({
+        where: {
+          id: input.itemId,
+          list: {
+            users: {
+              some: {
+                id: ctx.session.id,
+              },
+            },
+          },
+        },
+        data: {
+          completedAt: new Date(),
+        },
+      });
+
+      return item;
+    }),
+
+  uncompleteListItem: protectedProcedure
+    .input(
+      z.object({
+        itemId: z.coerce.number(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const item = await ctx.prisma.listItem.updateMany({
+        where: {
+          id: input.itemId,
+          list: {
+            users: {
+              some: {
+                id: ctx.session.id,
+              },
+            },
+          },
+        },
+        data: {
+          completedAt: new Date(),
         },
       });
 
