@@ -1,15 +1,20 @@
 <template>
   <div>
-    <h1 class="text-xl font-bold">Lists</h1>
-    <RouterLink
-      v-for="list in lists"
-      :key="list.id"
-      class="block"
-      :to="`/lists/${list.id}`"
-    >
-      <h4 class="font-bold">{{ list.name }}</h4>
-      <time>Updated {{ list.updatedAt.toLocaleDateString() }}</time>
-    </RouterLink>
+    <h1 class="text-xl font-bold mb-2">Lists</h1>
+
+    <div class="py-2">
+      <RouterLink
+        v-for="list in lists"
+        :key="list.id"
+        class="block items-center gap-3 bg-slate-50 p-4 rounded-md mb-2"
+        :to="`/lists/${list.id}`"
+      >
+        <h4 class="font-bold text-md">{{ list.name }}</h4>
+        <time class="text-sm text-slate-500"
+          >Updated {{ list.updatedAt.toLocaleDateString() }}</time
+        >
+      </RouterLink>
+    </div>
 
     <CreateListForm @create="createList" />
   </div>

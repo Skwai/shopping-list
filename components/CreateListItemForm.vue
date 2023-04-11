@@ -2,7 +2,7 @@
   <form @submit.prevent="submit">
     <input
       v-model="label"
-      class="p-3 border border-gray-200 block w-full focus:border-gray-300 outline-none"
+      class="p-3 border border-gray-200 block w-full focus:border-gray-300 outline-none rounded-md"
       type="text"
       placeholder="Add item"
       required
