@@ -11,7 +11,7 @@
       >
         <h4 class="font-bold text-md">{{ list.name }}</h4>
         <time class="text-sm text-slate-500"
-          >Updated {{ list.updatedAt.toLocaleDateString() }}</time
+          >Updated {{ list.updatedAt.toLocaleDateString("en-AU") }}</time
         >
       </RouterLink>
     </div>

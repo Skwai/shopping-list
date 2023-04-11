@@ -81,29 +81,29 @@ export const listsRouter = router({
     .mutation(async ({ ctx, input }) => {
       const { label, listId } = input;
 
-      // Ensure the user has access to the list we're creating an item for
-      await ctx.prisma.list.findFirstOrThrow({
-        where: {
-          id: listId,
-          deletedAt: null,
-          users: {
-            some: {
-              id: ctx.session.uid,
+      const [, item] = await ctx.prisma.$transaction([
+        ctx.prisma.list.findFirstOrThrow({
+          where: {
+            id: listId,
+            deletedAt: null,
+            users: {
+              some: {
+                id: ctx.session.uid,
+              },
             },
           },
-        },
-      });
-
-      const item = await ctx.prisma.listItem.create({
-        data: {
-          label,
-          list: {
-            connect: {
-              id: listId,
+        }),
+        ctx.prisma.listItem.create({
+          data: {
+            label,
+            list: {
+              connect: {
+                id: listId,
+              },
             },
           },
-        },
-      });
+        }),
+      ]);
 
       return item;
     }),
@@ -141,21 +141,29 @@ export const listsRouter = router({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const item = await ctx.prisma.listItem.updateMany({
-        where: {
-          id: input.itemId,
-          list: {
-            users: {
-              some: {
-                id: ctx.session.id,
+      const [, item] = await ctx.prisma.$transaction([
+        ctx.prisma.listItem.findFirstOrThrow({
+          where: {
+            id: input.itemId,
+            list: {
+              users: {
+                some: {
+                  id: ctx.session.id,
+                },
               },
             },
           },
-        },
-        data: {
-          completedAt: new Date(),
-        },
-      });
+        }),
+
+        ctx.prisma.listItem.update({
+          where: {
+            id: input.itemId,
+          },
+          data: {
+            completedAt: new Date(),
+          },
+        }),
+      ]);
 
       return item;
     }),
@@ -167,9 +175,46 @@ export const listsRouter = router({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const item = await ctx.prisma.listItem.updateMany({
+      const [, item] = await ctx.prisma.$transaction([
+        ctx.prisma.listItem.findFirstOrThrow({
+          where: {
+            id: input.itemId,
+            list: {
+              users: {
+                some: {
+                  id: ctx.session.id,
+                },
+              },
+            },
+          },
+        }),
+
+        ctx.prisma.listItem.update({
+          where: {
+            id: input.itemId,
+          },
+          data: {
+            completedAt: null,
+          },
+        }),
+      ]);
+
+      return item;
+    }),
+
+  updateListItem: protectedProcedure
+    .input(
+      z.object({
+        itemId: z.coerce.number(),
+        label: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { label, itemId } = input;
+
+      await ctx.prisma.listItem.updateMany({
         where: {
-          id: input.itemId,
+          id: itemId,
           list: {
             users: {
               some: {
@@ -179,10 +224,8 @@ export const listsRouter = router({
           },
         },
         data: {
-          completedAt: new Date(),
+          label,
         },
       });
-
-      return item;
     }),
 });
