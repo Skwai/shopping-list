@@ -1,6 +1,6 @@
 <template>
   <button
-    class="rounded-lg px-4 py-2 text-center inline-flex items-center content-center border border-gray-200 hover:border-gray-400 border-solid text-gray-600 hover:shadow-lg transition-all"
+    class="btn"
     :disabled="disabled || loading"
     :type="type"
     :loading="loading"
