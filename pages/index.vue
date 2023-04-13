@@ -6,11 +6,11 @@
       <RouterLink
         v-for="list in lists"
         :key="list.id"
-        class="block items-center gap-3 bg-slate-50 p-4 rounded-md mb-2"
         :to="`/lists/${list.id}`"
+        class="block py-3"
       >
-        <h4 class="font-bold text-md">{{ list.name }}</h4>
-        <time class="text-sm text-slate-500"
+        <h4 class="text-xl font-semibold">{{ list.name }}</h4>
+        <time class="text-sm text-gray-400"
           >Updated {{ list.updatedAt.toLocaleDateString("en-AU") }}</time
         >
       </RouterLink>

@@ -1,7 +1,7 @@
 <template>
-  <main
-    class="bg-white m-x-auto max-w-md w-full rounded-lg p-6 mx-auto shadow-lg"
-  >
-    <slot />
+  <main class="card mx-auto max-w-md w-full bg-base-100 shadow-xl">
+    <div class="card card-body">
+      <slot />
+    </div>
   </main>
 </template>

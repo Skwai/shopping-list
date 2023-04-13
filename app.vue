@@ -9,8 +9,11 @@
 const { authenticated } = useSession();
 
 useHead({
+  htmlAttrs: {
+    "data-theme": "cupcake",
+  },
   bodyAttrs: {
-    class: "flex justify-center p-4 min-h-screen bg-slate-100",
+    class: "flex justify-center p-4 min-h-screen bg-base-200",
   },
 });
 

@@ -14,10 +14,10 @@
       <div
         v-for="item in list.items"
         :key="item.id"
-        class="flex items-center gap-3 text-lg bg-slate-50 py-3 px-4 rounded-md mb-2"
+        class="flex items-center gap-3 text-lg py-3"
       >
         <input
-          class="checkbox"
+          class="toggle toggle-primary"
           type="checkbox"
           :checked="!!item.completedAt"
           aria-label="Completed"
@@ -89,9 +89,3 @@ const updateListItem = async (ev: Event, itemId: number) => {
   }
 };
 </script>
-
-<style scoped>
-.checkbox {
-  accent-color: currentColor;
-}
-</style>

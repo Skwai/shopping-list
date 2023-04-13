@@ -25,6 +25,7 @@
     "@prisma/client": "^4.12.0",
     "@trpc/client": "^10.19.1",
     "@trpc/server": "^10.19.1",
+    "daisyui": "^2.51.5",
     "firebase": "^9.19.1",
     "firebase-admin": "^11.6.0",
     "nuxt": "^3.3.3",
