@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1 class="card-title mb-2">Lists</h1>
+    <h1 class="card-title">Lists</h1>
 
     <div class="py-2">
       <RouterLink

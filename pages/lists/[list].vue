@@ -1,11 +1,8 @@
 <template>
   <div v-if="list">
-    <header class="flex items-center gap-3 mb-2">
-      <RouterLink
-        to="/"
-        class="inline-flex items-center justify-center text-slate-400"
-      >
-        <ChevronLeftIcon class="w-5 h-5" />
+    <header class="flex items-center gap-3">
+      <RouterLink to="/" class="btn btn-xs btn-circle">
+        <ArrowSmallLeftIcon class="w-4 h-4" />
       </RouterLink>
       <h1 class="card-title">{{ list.name }}</h1>
 
@@ -28,7 +25,7 @@
         class="flex items-center gap-3 text-lg py-3"
       >
         <input
-          class="checkbox checkbox-sm"
+          class="checkbox checkbox-primary checkbox-sm"
           type="checkbox"
           :checked="!!item.completedAt"
           aria-label="Completed"
@@ -49,7 +46,7 @@
 </template>
 
 <script setup lang="ts">
-import { ChevronLeftIcon } from "@heroicons/vue/24/outline";
+import { ArrowSmallLeftIcon } from "@heroicons/vue/24/solid";
 import { ListItem } from ".prisma/client";
 
 const route = useRoute();
