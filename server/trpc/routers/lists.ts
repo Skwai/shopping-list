@@ -42,7 +42,6 @@ export const listsRouter = router({
           items: {
             where: {
               deletedAt: null,
-              completedAt: null,
             },
           },
         },

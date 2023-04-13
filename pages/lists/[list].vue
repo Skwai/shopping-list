@@ -1,23 +1,34 @@
 <template>
   <div v-if="list">
-    <header class="flex align-center gap-3 mb-2">
+    <header class="flex items-center gap-3 mb-2">
       <RouterLink
         to="/"
         class="inline-flex items-center justify-center text-slate-400"
       >
         <ChevronLeftIcon class="w-5 h-5" />
       </RouterLink>
-      <h1 class="text-xl font-bold">{{ list.name }}</h1>
+      <h1 class="card-title">{{ list.name }}</h1>
+
+      <div class="ml-auto form-control">
+        <label class="label gap-3">
+          <span class="label-text">Show completed</span>
+          <input
+            v-model="showCompletedItems"
+            type="checkbox"
+            class="toggle toggle-sm toggle-primary"
+          />
+        </label>
+      </div>
     </header>
 
     <div class="py-2">
       <div
-        v-for="item in list.items"
+        v-for="item in itemsToDisplay"
         :key="item.id"
         class="flex items-center gap-3 text-lg py-3"
       >
         <input
-          class="toggle toggle-primary"
+          class="checkbox checkbox-sm"
           type="checkbox"
           :checked="!!item.completedAt"
           aria-label="Completed"
@@ -42,6 +53,28 @@ import { ChevronLeftIcon } from "@heroicons/vue/24/outline";
 import { ListItem } from ".prisma/client";
 
 const route = useRoute();
+
+const showCompletedItems = ref(false);
+
+const itemsToDisplay = computed(() => {
+  let items = list.value?.items ?? [];
+
+  if (!showCompletedItems.value) {
+    items = items.filter((item) => !item.completedAt);
+  }
+
+  return items.sort((a, b) => {
+    if (a.completedAt && !b.completedAt) {
+      return -1;
+    }
+
+    if (!a.completedAt && b.completedAt) {
+      return 1;
+    }
+
+    return 0;
+  });
+});
 
 const listId = computed<number>(() => {
   return parseInt(route.params.list as string);

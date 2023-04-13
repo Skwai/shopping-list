@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1 class="text-xl font-bold mb-2">Lists</h1>
+    <h1 class="card-title mb-2">Lists</h1>
 
     <div class="py-2">
       <RouterLink
@@ -9,7 +9,7 @@
         :to="`/lists/${list.id}`"
         class="block py-3"
       >
-        <h4 class="text-xl font-semibold">{{ list.name }}</h4>
+        <h4 class="text-xl">{{ list.name }}</h4>
         <time class="text-sm text-gray-400"
           >Updated {{ list.updatedAt.toLocaleDateString("en-AU") }}</time
         >

@@ -3,7 +3,7 @@
     <p>
       <input
         v-model="name"
-        class="input input-bordered input-md w-full"
+        class="input input-bordered w-full"
         placeholder="New list name"
         type="text"
         required
