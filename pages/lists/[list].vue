@@ -6,18 +6,14 @@
       </RouterLink>
       <h1 class="card-title">{{ list.name }}</h1>
 
-      <div class="ml-auto form-control">
-        <label class="label gap-3">
-          <span class="label-text">Show completed</span>
-          <input
-            v-model="showCompletedItems"
-            type="checkbox"
-            class="toggle toggle-sm toggle-primary"
-          />
-        </label>
-      </div>
+      <button
+        type="button"
+        class="ml-auto btn btn-sm"
+        @click="showInviteModal = true"
+      >
+        Share
+      </button>
     </header>
-
     <div class="py-2">
       <div
         v-for="item in itemsToDisplay"
@@ -41,7 +37,35 @@
       </div>
     </div>
 
+    <!-- <div class="form-control">
+      <label class="label cursor-pointer">
+        <input
+          v-model="showCompletedItems"
+          type="checkbox"
+          class="toggle toggle-sm toggle-primary"
+        />
+        <span class="label-text">Show completed</span>
+      </label>
+    </div> -->
+
     <CreateListItemForm @create="addListItem" />
+
+    <AppModal v-if="showInviteModal" @close="showInviteModal = false">
+      <form @submit.prevent="inviteUser">
+        <h3 class="font-bold text-lg mb-4">Share list with others</h3>
+
+        <div class="flex items-center gap-4">
+          <input
+            v-model="inviteEmail"
+            class="input input-bordered w-full"
+            type="email"
+            placeholder="Email address"
+            required
+          />
+          <button type="submit" class="btn btn-primary">Invite</button>
+        </div>
+      </form>
+    </AppModal>
   </div>
 </template>
 
@@ -52,6 +76,8 @@ import { ListItem } from ".prisma/client";
 const route = useRoute();
 
 const showCompletedItems = ref(false);
+const inviteEmail = ref("");
+const showInviteModal = ref(false);
 
 const itemsToDisplay = computed(() => {
   let items = list.value?.items ?? [];
@@ -80,6 +106,15 @@ const listId = computed<number>(() => {
 const { data: list } = await useTrpc().lists.getList.useQuery({
   id: listId.value,
 });
+
+const inviteUser = async () => {
+  await useTrpc().lists.addUserToList.mutate({
+    listId: listId.value,
+    email: inviteEmail.value,
+  });
+
+  showInviteModal.value = false;
+};
 
 const addListItem = async ({ label }: Pick<ListItem, "label">) => {
   const item = await useTrpc().lists.addItemToList.mutate({

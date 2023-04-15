@@ -1,11 +1,24 @@
 import { z } from "zod";
+import { PrismaClient } from "@prisma/client";
 import { protectedProcedure, router } from "../trpc";
+import { createUserWithEmail } from "~/server/utils/firebase";
 
 const PUBLIC_LIST_FIELDS = {
   id: true,
   name: true,
   createdAt: true,
   updatedAt: true,
+};
+
+const createNewUser = async (prisma: PrismaClient, email: string) => {
+  const firebaseUser = await createUserWithEmail(email);
+
+  return prisma.user.create({
+    data: {
+      id: firebaseUser.uid,
+      email,
+    },
+  });
 };
 
 export const listsRouter = router({
@@ -224,6 +237,42 @@ export const listsRouter = router({
         },
         data: {
           label,
+        },
+      });
+    }),
+
+  addUserToList: protectedProcedure
+    .input(
+      z.object({
+        listId: z.coerce.number().int(),
+        email: z.coerce.string().email(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { listId, email } = input;
+
+      let user;
+
+      user = await ctx.prisma.user.findUnique({
+        where: {
+          email,
+        },
+      });
+
+      if (!user) {
+        user = await createNewUser(ctx.prisma, email);
+      }
+
+      await ctx.prisma.list.update({
+        where: {
+          id: listId,
+        },
+        data: {
+          users: {
+            connect: {
+              id: user.id,
+            },
+          },
         },
       });
     }),

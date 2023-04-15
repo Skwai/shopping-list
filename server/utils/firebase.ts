@@ -22,3 +22,11 @@ export const decodeSessionCookie = async (session: string) => {
     return undefined;
   }
 };
+
+export const createUserWithEmail = async (email: string) => {
+  const user = await getAuth().createUser({
+    email,
+  });
+
+  return user;
+};
