@@ -3,8 +3,6 @@ import { getAuth } from "firebase-admin/auth";
 
 const config = useRuntimeConfig();
 
-console.log(config);
-
 export const app = initializeApp({
   credential: cert({
     projectId: config.firebaseProjectId,
