@@ -3,8 +3,10 @@
     <h1 class="card-title">Lists</h1>
 
     <div class="py-2">
+      <AppSpinner v-if="pending" />
       <RouterLink
         v-for="list in lists"
+        v-else
         :key="list.id"
         :to="`/lists/${list.id}`"
         class="block py-3"
@@ -23,7 +25,12 @@
 <script setup lang="ts">
 import { List } from ".prisma/client";
 
-const { data: lists } = await useTrpc().lists.getAllLists.useQuery();
+const { data: lists, pending } = await useTrpc().lists.getAllLists.useQuery(
+  undefined,
+  {
+    lazy: true,
+  }
+);
 
 const createList = async ({ name }: Pick<List, "name">) => {
   const list = await useTrpc().lists.createList.mutate({ name });

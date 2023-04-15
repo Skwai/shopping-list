@@ -6,17 +6,29 @@
       </RouterLink>
       <h1 class="card-title">{{ list.name }}</h1>
 
-      <button
-        type="button"
-        class="ml-auto btn btn-sm"
-        @click="showInviteModal = true"
-      >
-        Share
-      </button>
+      <div class="flex gap-2 ml-auto">
+        <button
+          type="button"
+          class="ml-auto btn btn-sm btn-warning"
+          @click="deleteList"
+        >
+          Delete
+        </button>
+        <button
+          type="button"
+          class="btn btn-sm"
+          @click="showInviteModal = true"
+        >
+          Share
+        </button>
+      </div>
     </header>
+
     <div class="py-2">
+      <AppSpinner v-if="pending" />
       <div
         v-for="item in itemsToDisplay"
+        v-else
         :key="item.id"
         class="flex items-center gap-3 text-lg py-3"
       >
@@ -74,6 +86,8 @@ import { ArrowSmallLeftIcon } from "@heroicons/vue/24/solid";
 import { ListItem } from ".prisma/client";
 
 const route = useRoute();
+const router = useRouter();
+const trpc = useTrpc();
 
 const showCompletedItems = ref(false);
 const inviteEmail = ref("");
@@ -99,16 +113,35 @@ const itemsToDisplay = computed(() => {
   });
 });
 
+const deleteList = async () => {
+  const confirmed = confirm(
+    "Are you sure you want to delete this shopping list?"
+  );
+
+  if (confirmed) {
+    await trpc.lists.deleteList.mutate({
+      listId: listId.value,
+    });
+
+    router.push("/");
+  }
+};
+
 const listId = computed<number>(() => {
   return parseInt(route.params.list as string);
 });
 
-const { data: list } = await useTrpc().lists.getList.useQuery({
-  id: listId.value,
-});
+const { data: list, pending } = await trpc.lists.getList.useQuery(
+  {
+    id: listId.value,
+  },
+  {
+    lazy: true,
+  }
+);
 
 const inviteUser = async () => {
-  await useTrpc().lists.addUserToList.mutate({
+  await trpc.lists.addUserToList.mutate({
     listId: listId.value,
     email: inviteEmail.value,
   });
@@ -117,7 +150,7 @@ const inviteUser = async () => {
 };
 
 const addListItem = async ({ label }: Pick<ListItem, "label">) => {
-  const item = await useTrpc().lists.addItemToList.mutate({
+  const item = await trpc.lists.addItemToList.mutate({
     label,
     listId: listId.value,
   });
@@ -131,11 +164,11 @@ const toggleListItem = async (item: ListItem) => {
   let updatedItem;
 
   if (item.completedAt) {
-    updatedItem = await useTrpc().lists.uncompleteListItem.mutate({
+    updatedItem = await trpc.lists.uncompleteListItem.mutate({
       itemId: item.id,
     });
   } else {
-    updatedItem = await useTrpc().lists.completeListItem.mutate({
+    updatedItem = await trpc.lists.completeListItem.mutate({
       itemId: item.id,
     });
   }
@@ -147,7 +180,7 @@ const updateListItem = async (ev: Event, itemId: number) => {
   if (ev.target instanceof HTMLInputElement) {
     ev.target.blur();
 
-    await useTrpc().lists.updateListItem.mutate({
+    await trpc.lists.updateListItem.mutate({
       itemId,
       label: ev.target.value,
     });

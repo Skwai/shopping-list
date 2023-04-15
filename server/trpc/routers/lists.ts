@@ -83,6 +83,25 @@ export const listsRouter = router({
       return list;
     }),
 
+  deleteList: protectedProcedure
+    .input(
+      z.object({
+        listId: z.coerce.number().int(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { listId } = input;
+
+      await ctx.prisma.list.update({
+        where: {
+          id: listId,
+        },
+        data: {
+          deletedAt: new Date(),
+        },
+      });
+    }),
+
   addItemToList: protectedProcedure
     .input(
       z.object({
