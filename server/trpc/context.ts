@@ -1,7 +1,7 @@
 import { inferAsyncReturnType } from "@trpc/server";
 import { H3Event } from "h3";
 import { decodeSessionCookie } from "@/server/utils/firebase";
-import { getPrismaClient } from "@/server/utils/prisma-client";
+import { prisma } from "@/server/utils/prisma-client";
 
 const decodeSession = async (event: H3Event) => {
   const sessionCookie = getCookie(event, "session");
@@ -20,7 +20,7 @@ export async function createContext(event: H3Event) {
   const authenticated = !!session;
 
   return {
-    prisma: getPrismaClient(),
+    prisma,
     authenticated,
     session,
   };

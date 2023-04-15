@@ -1,12 +1,13 @@
 import { PrismaClient } from "@prisma/client";
-import { isDevEnv } from "./env";
 
-let prisma: PrismaClient;
+const globalForPrisma = global as unknown as {
+  prisma: PrismaClient | undefined;
+};
 
-export const getPrismaClient = () => {
-  prisma ??= new PrismaClient({
-    log: isDevEnv() ? ["query"] : [],
+export const prisma =
+  globalForPrisma.prisma ??
+  new PrismaClient({
+    log: ["query"],
   });
 
-  return prisma;
-};
+if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;

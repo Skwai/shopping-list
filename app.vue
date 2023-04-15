@@ -9,6 +9,7 @@
 const { authenticated } = useSession();
 
 useHead({
+  title: "Shopping lists",
   htmlAttrs: {
     "data-theme": "cupcake",
   },
