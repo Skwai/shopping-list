@@ -24,7 +24,7 @@
       </div>
     </header>
 
-    <div class="py-2">
+    <div class="py-2 divide-y">
       <AppSpinner v-if="pending" />
       <div
         v-for="item in itemsToDisplay"
