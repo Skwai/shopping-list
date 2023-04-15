@@ -1,8 +1,8 @@
 <template>
-  <div>
+  <div class="flex flex-col h-full">
     <h1 class="card-title">Lists</h1>
 
-    <div class="py-2">
+    <div class="py-2 flex-1">
       <AppSpinner v-if="pending" />
       <RouterLink
         v-for="list in lists"

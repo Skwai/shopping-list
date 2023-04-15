@@ -1,7 +1,11 @@
 <template>
-  <div v-if="list">
+  <div v-if="list" class="flex flex-col h-full">
     <header class="flex items-center gap-3">
-      <RouterLink to="/" class="btn btn-xs btn-circle">
+      <RouterLink
+        to="/"
+        class="btn btn-xs btn-outline btn-circle"
+        aria-label="Back"
+      >
         <ArrowSmallLeftIcon class="w-4 h-4" />
       </RouterLink>
       <h1 class="card-title">{{ list.name }}</h1>
@@ -24,28 +28,30 @@
       </div>
     </header>
 
-    <div class="py-2 divide-y">
-      <AppSpinner v-if="pending" />
-      <div
-        v-for="item in itemsToDisplay"
-        v-else
-        :key="item.id"
-        class="flex items-center gap-3 text-lg py-3"
-      >
-        <input
-          class="checkbox checkbox-primary checkbox-sm"
-          type="checkbox"
-          :checked="!!item.completedAt"
-          aria-label="Completed"
-          @change="() => toggleListItem(item)"
-        />
+    <div class="flex-1">
+      <div class="py-2 divide-y max-h-full overflow-y-auto">
+        <AppSpinner v-if="pending" />
+        <div
+          v-for="item in itemsToDisplay"
+          v-else
+          :key="item.id"
+          class="flex items-center gap-3 text-lg py-3"
+        >
+          <input
+            class="checkbox checkbox-primary checkbox-sm"
+            type="checkbox"
+            :checked="!!item.completedAt"
+            aria-label="Completed"
+            @change="() => toggleListItem(item)"
+          />
 
-        <input
-          v-model="item.label"
-          class="w-full bg-transparent outline-none"
-          @change="($event) => updateListItem($event, item.id)"
-          @keydown.enter="($event) => updateListItem($event, item.id)"
-        />
+          <input
+            v-model="item.label"
+            class="w-full bg-transparent outline-none"
+            @change="($event) => updateListItem($event, item.id)"
+            @keydown.enter="($event) => updateListItem($event, item.id)"
+          />
+        </div>
       </div>
     </div>
 
